@@ -11,6 +11,7 @@ This module contains common spreadsheets' models
 from collections import defaultdict
 from itertools import chain
 from functools import wraps
+from warnings import warn
 
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element, SubElement
@@ -558,9 +559,15 @@ class Worksheet(object):
                                        'type': edit_link.get('type'),
                                        'href': edit_link.get('href')})
 
+            try:
+                cell_val = unicode(cell.value)
+            except UnicodeDecodeError:
+                # String very unlikely to occur as value yet indicative of problem entry.
+                cell_val = "@???@"
+                warn("Inserting {} for cell on row {} and col {}".format(cell_val, cell.row, cell.col))
             SubElement(entry, 'gs:cell', {'row': str(cell.row),
                                           'col': str(cell.col),
-                                          'inputValue': unicode(cell.value)})
+                                          'inputValue': cell_val})
         return feed
 
     def update_cells(self, cell_list):
