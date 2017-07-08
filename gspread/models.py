@@ -565,6 +565,9 @@ class Worksheet(object):
                 # String very unlikely to occur as value yet indicative of problem entry.
                 cell_val = "@???@"
                 warn("Inserting {} for cell on row {} and col {}".format(cell_val, cell.row, cell.col))
+            # We want empty cells instead of stringified 'None' s
+            if cell_val == "None":
+                cell_val = ""
             SubElement(entry, 'gs:cell', {'row': str(cell.row),
                                           'col': str(cell.col),
                                           'inputValue': cell_val})
